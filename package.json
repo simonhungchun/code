@@ -1,5 +1,5 @@
 {
-  "name": "code",
+  "name": "code123",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,18 +7,18 @@
     "test": "echo \"Error: no test specified\"",
     "dev": "cross-env NODE_ENV=development npx webpack-dev-server --config=webpack.config.js",
     "prebuild": "rimraf dist",
-    "build": "cross-env NODE_ENV=production npx webpack --config=webpack.config.js",
+    "build": "cross-env NODE_ENV=production npx webpack",
     "prepare": "husky install"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.4.0",
     "eslint-import-resolver-webpack": "^0.13.2",
     "jquery": "^3.7.0",
     "lodash": "^4.17.21"
   },
   "config": {
-    "port": 3000,
     "commitizen": {
       "path": "./node_modules/cz-customizable"
     }
@@ -26,6 +26,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.6.5",
     "@commitlint/config-conventional": "^17.6.5",
+    "ajv": "^7.2.4",
     "autoprefixer": "^10.4.14",
     "commitizen": "^4.3.0",
     "cross-env": "^7.0.3",
@@ -36,6 +37,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-vue": "^9.14.1",
+    "glob": "^10.2.7",
     "html-webpack-plugin": "^5.5.3",
     "husky": "^8.0.0",
     "less": "^4.1.3",

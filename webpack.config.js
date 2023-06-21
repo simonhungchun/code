@@ -2,15 +2,23 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WebpackBar = require('webpackbar');
 const path = require('path');
-console.log(
-  'process.env.npm_package_config_port',
-  process.env.npm_package_config_port
-);
+const glob = require('glob');
+const views = glob
+  .sync(path.resolve(__dirname, './src/views/*/*.html'))
+  .reduce((prev, current) => {
+    const key = current.match(/\/views\/(\w+)\//)[1];
+    prev[key] = current.replace('.html', '');
+    return prev;
+  }, {});
 module.exports = {
+  entry: {
+    ...views,
+    common: './src/index.js',
+  },
   devtool: 'source-map',
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: 'main.[fullhash:8].js',
+    filename: '[name].[fullhash:8].js',
   },
   module: {
     rules: [
@@ -44,22 +52,14 @@ module.exports = {
     lodash: '_',
   },
   devServer: {
-    open: true,
+    open: ['/home.html'],
     // 配置前端请求代理
     proxy: {
-      // 在开发环境下面代理的目标是http://127.0.0.1:3000
-      // 在生产环境下面代理的目标是http://api.cc0820.top:3000
       '^/api': {
-        target:
-          process.env.NODE_ENV === 'development'
-            ? 'http://127.0.0.1:3000'
-            : process.env.NODE_ENV === 'production'
-            ? 'http://api.cc0820.top:3000'
-            : '',
-        pathRewrite: { '/api': '' },
+        target: 'https://www.starbucks.com.cn/',
       },
-      '^/api1': {
-        target: 'http://127.0.0.1:3001',
+      '^/bff': {
+        target: 'https://bff.starbucks.com.cn/',
         pathRewrite: { '/api1': '' },
       },
     },
@@ -70,17 +70,25 @@ module.exports = {
   plugins: [
     new WebpackBar(),
     new MiniCssExtractPlugin({
-      filename: 'main.[contenthash:8].css',
+      filename: '[name].[contenthash:8].css',
     }),
-    new HtmlWebpackPlugin({
-      template: './public/index.html',
-      cdn: {
-        script: [
-          'https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js',
-          'https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.core.min.js',
-        ],
-        style: [],
-      },
-    }),
+    // new HtmlWebpackPlugin({
+    //   template: './public/index.html',
+    //   cdn: {
+    //     script: [
+    //       'https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js',
+    //       'https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.core.min.js',
+    //     ],
+    //     style: [],
+    //   },
+    // }),
+    ...Object.entries(views).map(
+      ([key, value]) =>
+        new HtmlWebpackPlugin({
+          template: value.replace(/$/, '.html'),
+          chunks: ['common', key],
+          filename: `${key}.html`,
+        })
+    ),
   ],
 };
